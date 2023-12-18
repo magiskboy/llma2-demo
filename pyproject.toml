@@ -1,19 +1,17 @@
-[tool.poetry]
+[project]
 name = "llma2-demo"
 version = "0.1.0"
 description = ""
-authors = ["Nguyen Khac Thanh <nguyenkhacthanh244@gmail.com>"]
+authors = [
+    { name = "Nguyen Khac Thanh", email = "nguyenkhacthanh244@gmail.com" },
+]
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.11"
-fastapi = "^0.105.0"
-uvicorn = "^0.24.0.post1"
-httpx = "^0.25.2"
-scipy = "^1.11.4"
-sse-starlette = "^1.8.2"
-
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires-python = ">=3.8"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "httpx",
+    "scipy",
+    "sse-starlette",
+    "pydantic-settings",
+]

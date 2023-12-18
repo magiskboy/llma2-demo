@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  app:
+    image: nguyenkhacthanh/llma2-demo:latest
+    ports:
+      - 8000:8000
+    depends_on:
+      - ollama
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    networks:
+      - mynet
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - 11434:11434
+    networks:
+      - mynet
+
+networks:
+  mynet:

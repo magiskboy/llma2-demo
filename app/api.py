@@ -8,6 +8,7 @@ from .models import MatchingModel, ScoredSentences, ChatModel
 from .distances import CosineDistance
 from .embeddings import LLAMA2Embedding
 from .llm import LLAMA2Service
+from .settings import settings
 
 router = APIRouter()
 
@@ -21,10 +22,11 @@ class MatchedResponse(BaseModel):
 
 @router.post("/matching", response_model=MatchedResponse)
 async def matching(body: MatchRequest):
-    top_k = body.k
-    model = MatchingModel(LLAMA2Embedding, CosineDistance)
+    embedding_strategy = LLAMA2Embedding(settings.ollama_host)
+    distance_strategy = CosineDistance()
+    model = MatchingModel(embedding_strategy, distance_strategy)
     sentences = await model.compute(body.query, body.document)
-    choices = sentences[:top_k]
+    choices = sentences[:body.k]
     return { "sentences": choices }
 
 class ChatRequest(BaseModel):
@@ -33,7 +35,7 @@ class ChatRequest(BaseModel):
 
 @router.post("/chat")
 async def chat(body: ChatRequest):
-    llm = LLAMA2Service("http://localhost:11434")
+    llm = LLAMA2Service(settings.ollama_host)
     model = ChatModel(llm)
 
     async def generator():
