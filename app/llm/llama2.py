@@ -16,7 +16,7 @@ class LLAMA2Service(LLMService):
             **kwargs,
         }
         
-        with httpx.stream("POST", url, json=body) as res:
+        with httpx.stream("POST", url, json=body, timeout=60) as res:
             for line in res.iter_lines():
                 data = json.loads(line)
                 if data.get("done", True):

@@ -37,13 +37,4 @@ class ChatRequest(BaseModel):
 async def chat(body: ChatRequest):
     llm = LLAMA2Service(settings.ollama_host)
     model = ChatModel(llm)
-
-    async def generator():
-        async for text in model.compute(body.sentences, body.query):
-            data = {
-                "text": text,
-                "timestamp": time.time(),
-            }
-            chunk = json.dumps(data) + "\n"
-            yield chunk
-    return EventSourceResponse(generator())
+    return EventSourceResponse(model.compute(body.sentences, body.query))
