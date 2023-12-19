@@ -1,14 +1,13 @@
 from typing import Type
 import asyncio
-from dataclasses import dataclass
+from pydantic import BaseModel
 from ._base import Computation
 from ..distances import DistanceCalculator
 from ..embeddings import Embedding
 from ..llm import LLAMA2Service
 from ..utils import split_sentences
 
-@dataclass()
-class ScoredSentences:
+class ScoredSentences(BaseModel):
     score: float
     text: str
 

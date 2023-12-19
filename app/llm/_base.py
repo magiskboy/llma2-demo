@@ -1,6 +1,6 @@
-from typing import AsyncIterator
+from typing import AsyncIterator, Protocol
 
-class LLMService:
+class LLMService(Protocol):
     async def completion(self, prompt: str, **kwargs) -> AsyncIterator[str]:
         raise NotImplementedError()
 

@@ -7,17 +7,12 @@ class ChatModel(Computation):
     def __init__(self, llm: LLMService):
         self.llm = llm
 
-    async def compute(self, sentences: list[ScoredSentences], query: str) -> AsyncIterator[str]:
-        messages = []
-        for sentence in sentences:
-            messages.append({
-                "content": sentence.text,
-                "role": "user",
-            })
-        messages.append({
-            "content": query,
-            "role": "user",
-        })
+    async def compute(self, sentences: list[str], query: str) -> AsyncIterator[str]:
+        join_context = ".\n".join(sentences)
+        prompt = f"""
+            You are giving the context and the question, try to generate the answer with the given context:
+            context: {join_context}.
+            question: {query}."""
 
-        async for text in self.llm.chat(messages):
+        async for text in self.llm.completion(prompt):
             yield text

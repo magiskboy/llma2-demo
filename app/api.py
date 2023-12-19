@@ -31,7 +31,7 @@ async def matching(body: MatchRequest):
 
 class ChatRequest(BaseModel):
     query: str
-    sentences: list[ScoredSentences]
+    sentences: list[str]
 
 @router.post("/chat")
 async def chat(body: ChatRequest):
