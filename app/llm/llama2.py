@@ -1,8 +1,9 @@
 from typing import AsyncIterator
 import json
 import httpx
+from ._base import LLMService
 
-class Ollama:
+class LLAMA2Service(LLMService):
     def __init__(self, base_url: str):
         self.base_url = base_url
 
@@ -15,7 +16,7 @@ class Ollama:
             **kwargs,
         }
         
-        with httpx.stream("POST", url, json=body) as res:
+        with httpx.stream("POST", url, json=body, timeout=60) as res:
             for line in res.iter_lines():
                 data = json.loads(line)
                 if data.get("done", True):
@@ -31,14 +32,19 @@ class Ollama:
             **kwargs,
         }
         
-        with httpx.stream("POST", url, json=body) as res:
+        with httpx.stream("POST", url, json=body, timeout=60) as res:
             for line in res.iter_lines():
                 data = json.loads(line)
                 if data.get("done", True):
                     return
                 yield data.get("message", {}).get("content")
 
-    async def calculate_embeddings(self, prompt: str) -> list[int]:
-        async with httpx.AsyncClient() as client:
-            res = await client.post(f'{self.base_url}/api/embeddings', json={"model": "llama2", "prompt": prompt}, timeout=60)
-            return res.json().get("embedding") or []
+    async def calculate_embedding(self, prompt: str) -> list[float]:
+        url = f'{self.base_url}/api/embeddings'
+        body = {"model": "llama2", "prompt": prompt}
+        try:
+            async with httpx.AsyncClient() as client:
+                res = await client.post(url, json=body, timeout=60)
+                return res.json().get("embedding") or []
+        except TimeoutError:
+            return []
